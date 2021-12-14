@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-func CreateTable(db *sql.DB) {
+func CreateTable(){
 	// tworzymy tabelkę
 	createTableSQL := fmt.Sprintf(`CREATE TABLE ziola(
 		"id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,		
@@ -16,6 +16,10 @@ func CreateTable(db *sql.DB) {
 		"dzialanie" TEXT,
 		"wystepowanie" TEXT		
 	  );`)
+
+	// otwarcie i zdeferowanie zamknięcia pliku z bazą danych
+	db, _ := sql.Open("sqlite3", "./sqlite-database.db")
+	defer db.Close()
 
 	// przygotowywanie sql'a przez prepare jest bezpieczne, bardzo przydatne, gdy chcemy użyć tej samej kwerendy wiele razy
 	statement, err := db.Prepare(createTableSQL)
@@ -29,7 +33,12 @@ func CreateTable(db *sql.DB) {
 }
 
 // insercik, wartości z requesta przekazywane w parametrach funkcji
-func InsertIntoTable(db *sql.DB, nazwa string, dzialanie string, wystepowanie string) {
+func InsertIntoTable(nazwa string, dzialanie string, wystepowanie string) {
+
+	// otwarcie i zdeferowanie zamknięcia pliku z bazą danych
+	db, _ := sql.Open("sqlite3", "./sqlite-database.db")
+	defer db.Close()
+
 	insertStatementSQL := fmt.Sprintf(`INSERT INTO ziola(nazwa, dzialanie, wystepowanie) VALUES (?, ?, ?)`)
 
 	// przygotowywanie sql'a przez prepare jest bezpieczne, bardzo przydatne, gdy chcemy użyć tej samej kwerendy wiele razy
@@ -44,7 +53,12 @@ func InsertIntoTable(db *sql.DB, nazwa string, dzialanie string, wystepowanie st
 
 }
 
-func PrintFromTable(db *sql.DB) string {
+func PrintFromTable() string {
+
+	// otwarcie i zdeferowanie zamknięcia pliku z bazą danych
+	db, _ := sql.Open("sqlite3", "./sqlite-database.db")
+	defer db.Close()
+
 	//pobieramy po rzędzie dane bazych
 	row, err := db.Query(fmt.Sprintf("SELECT * FROM ziola"))
 	checkErr(err)
