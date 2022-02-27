@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	_ "github.com/mattn/go-sqlite3"
 	"log"
 	"main/dbhandler"
 	"net/http"
@@ -34,12 +33,14 @@ func main() {
 	// tworzenie nowej, czystej bazy danych
 	dbhandler.StartDB()
 
+	log.Println("zaczynam tabelke tworzyc")
 	// tworzymy strukturę bazy (tabelki)
 	dbhandler.CreateTable()
-
+	log.Println("tabela jest")
 	// poniższe funkcje stawiają nam serwer
 	http.HandleFunc("/post", postHandler)
 	http.HandleFunc("/get", getHandler)
+	log.Println("Handlery post i get działają")
 	log.Fatal(http.ListenAndServe(":1234", nil))
 }
 
@@ -52,9 +53,12 @@ func postHandler(w http.ResponseWriter, req *http.Request) {
 	err := decoder.Decode(&ziolaS)
 	checkErr(err)
 
+	log.Println("Json post zdekodowany")
+
 	// INSERT RECORDS
 	log.Println("Uwaga, dodano -> Nazwa: ", ziolaS.Nazwa, " Dzialanie: ", ziolaS.Dzialanie, " Wystepowanie: ", ziolaS.Wystepowanie)
 	dbhandler.InsertIntoTable(ziolaS.Nazwa, ziolaS.Dzialanie, ziolaS.Wystepowanie)
+	log.Println("insert pomyślny")
 }
 
 // serwer get
