@@ -3,10 +3,8 @@ package dbhandler
 import (
 	"database/sql"
 	"fmt"
-	"log"
-	"os"
-
 	_ "github.com/lib/pq"
+	"log"
 )
 
 const (
@@ -28,11 +26,9 @@ ziola(
 		"wystepowanie" TEXT		
 	  );`)
 
-	// tworzymy połączenie
-	psqlconn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
-
-	// połączenie i zdeferowanie zamknięcia pliku z bazą danych
-	db, _ := sql.Open("postgres", psqlconn)
+	//łączenie z bazą
+	db := connectToDB()
+	//dbamy o zamknięcie połączenia
 	defer db.Close()
 
 	// przygotowywanie sql'a przez prepare jest bezpieczne, bardzo przydatne, gdy chcemy użyć tej samej kwerendy wiele razy
@@ -49,19 +45,14 @@ ziola(
 // insercik, wartości z requesta przekazywane w parametrach funkcji
 func InsertIntoTable(nazwa string, dzialanie string, wystepowanie string) {
 
-	// tworzymy połączenie
-	psqlconn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
-
-	// połączenie i zdeferowanie zamknięcia pliku z bazą danych
-	log.Println("connecting to database.db...")
-	db, _ := sql.Open("postgres", psqlconn)
+	//łączenie z bazą
+	db := connectToDB()
+	//dbamy o zamknięcie połączenia
 	defer db.Close()
-	log.Println("Database connected!")
 
 	insertStatementSQL := fmt.Sprintf(`INSERT INTO "ziola"("nazwa", "dzialanie", "wystepowanie") VALUES ($1, $2, $3);`)
 
 	log.Println("prepare insert statement")
-	log.Println(insertStatementSQL)
 	// przygotowywanie sql'a przez prepare jest bezpieczne, bardzo przydatne, gdy chcemy użyć tej samej kwerendy wiele razy
 	statement, err := db.Prepare(insertStatementSQL)
 	checkErr(err)
@@ -78,14 +69,10 @@ func InsertIntoTable(nazwa string, dzialanie string, wystepowanie string) {
 
 func PrintFromTable() string {
 
-	// tworzymy połączenie
-	psqlconn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
-
-	// połączenie i zdeferowanie zamknięcia pliku z bazą danych
-	log.Println("connecting to database.db...")
-	db, _ := sql.Open("postgres", psqlconn)
+	//łączenie z bazą
+	db := connectToDB()
+	//dbamy o zamknięcie połączenia
 	defer db.Close()
-	log.Println("Database connected!")
 
 	//pobieramy po rzędzie dane bazych
 	row, err := db.Query(fmt.Sprintf("SELECT * FROM ziola"))
@@ -108,18 +95,19 @@ func PrintFromTable() string {
 	return fullReturn
 }
 
-func StartDB() {
-	// czyścimy baze danych żeby było wszystko widać
-	os.Remove("database.db")
+//Szybkie łączenie z bazą
+func connectToDB() *sql.DB {
 
-	// tworzymy baze danych
-	log.Println("Creating database.db...")
-	file, err := os.Create("database.db")
-	checkErr(err)
+	// tworzymy połączenie
+	log.Println("connecting to database...")
+	psqlconn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 
-	// kończenie operacji
-	file.Close()
-	log.Println("database.db created")
+	// połączenie i zdeferowanie zamknięcia pliku z bazą danych
+	db, _ := sql.Open("postgres", psqlconn)
+	log.Println("Database connected!")
+
+	//zwracamy dane połączenia
+	return db
 }
 
 //Sprawdzanie errorów nigdy jeszcze nie było tak szybkie i proste ;)

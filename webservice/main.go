@@ -21,17 +21,14 @@ TODO:
 - (^>^) GET zwraca liste rzeczy z DB
 - (^>^) Zrob nowy package, z funkcjami dotyczącymi DB- np. db.go. Zaimportuj go i używaj.
 - (^>^) Implementacja endpoitów osobnych funkcjach, nie w mainie
-- Dockerfile. Musi być możliwość zrobienia `docker run .` w folderze webservice, i serwis ma działać.
+- (^>^) Dockerfile. Musi być możliwość zrobienia `docker run .` w folderze webservice, i serwis ma działać.
 2.
-- Zmiana bazy danych na postgresql (Dockerfile przestanie dzialac)
+- (^>^) Zmiana bazy danych na postgresql (Dockerfile przestanie dzialac)
 - Docker-compose uzywajacy istniejacego Dockerfile (ma znow dzialac)
-
+- Może można zmieścić zamknięcie połączenia z bazą wewnątrz funkcji connectToDB (chyba)? (panic)
 
 */
 func main() {
-
-	// tworzenie nowej, czystej bazy danych
-	dbhandler.StartDB()
 
 	log.Println("zaczynam tabelke tworzyc")
 	// tworzymy strukturę bazy (tabelki)
