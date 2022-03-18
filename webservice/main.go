@@ -24,25 +24,25 @@ TODO:
 - (^>^) Dockerfile. Musi być możliwość zrobienia `docker run .` w folderze webservice, i serwis ma działać.
 2.
 - (^>^) Zmiana bazy danych na postgresql (Dockerfile przestanie dzialac)
-- Docker-compose uzywajacy istniejacego Dockerfile (ma znow dzialac)
+- (^>^) Docker-compose uzywajacy istniejacego Dockerfile (ma znow dzialac)
 - Może można zmieścić zamknięcie połączenia z bazą wewnątrz funkcji connectToDB (chyba)? (panic)
 
 */
 func main() {
 
-	log.Println("zaczynam tabelke tworzyc")
 	// tworzymy strukturę bazy (tabelki)
 	dbhandler.CreateTable()
-	log.Println("tabela jest")
 	// poniższe funkcje stawiają nam serwer
 	http.HandleFunc("/post", postHandler)
 	http.HandleFunc("/get", getHandler)
-	log.Println("Handlery post i get działają")
+	log.Println("Handlery post i get działają na porcie 1234")
 	log.Fatal(http.ListenAndServe(":1234", nil))
 }
 
 // serwer post
 func postHandler(w http.ResponseWriter, req *http.Request) {
+
+	log.Println("Post request incoming")
 
 	// czytanie jsona do struktury ziolaS
 	decoder := json.NewDecoder(req.Body)
@@ -50,12 +50,11 @@ func postHandler(w http.ResponseWriter, req *http.Request) {
 	err := decoder.Decode(&ziolaS)
 	checkErr(err)
 
-	log.Println("Json post zdekodowany")
+	log.Println("Json successfully decoded")
 
 	// INSERT RECORDS
-	log.Println("Uwaga, dodano -> Nazwa: ", ziolaS.Nazwa, " Dzialanie: ", ziolaS.Dzialanie, " Wystepowanie: ", ziolaS.Wystepowanie)
 	dbhandler.InsertIntoTable(ziolaS.Nazwa, ziolaS.Dzialanie, ziolaS.Wystepowanie)
-	log.Println("insert pomyślny")
+	log.Println("Uwaga, dodano -> Nazwa: ", ziolaS.Nazwa, " Dzialanie: ", ziolaS.Dzialanie, " Wystepowanie: ", ziolaS.Wystepowanie)
 }
 
 // serwer get

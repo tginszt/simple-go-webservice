@@ -1,0 +1,19 @@
+version: "3.9"
+services:
+  database:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: Huj105
+      POSTGRES_USER: herbal
+    volumes:
+      - HerbalDatabase:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+  herbal-webservice:
+    image: herbal-webservice
+    restart: always
+    ports:
+      - 1234:1234
+volumes:
+  HerbalDatabase:
+    driver: local

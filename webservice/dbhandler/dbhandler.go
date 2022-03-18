@@ -7,10 +7,11 @@ import (
 	"log"
 )
 
+//dane połączenia z bazą danych
 const (
-	host     = "localhost"
+	host     = "database"
 	port     = 5432
-	user     = "postgres"
+	user     = "herbal"
 	password = "Huj105"
 	dbname   = "postgres"
 )
@@ -32,14 +33,17 @@ ziola(
 	defer db.Close()
 
 	// przygotowywanie sql'a przez prepare jest bezpieczne, bardzo przydatne, gdy chcemy użyć tej samej kwerendy wiele razy
+	log.Println("preparing create table statement")
 	statement, err := db.Prepare(createTable)
 	checkErr(err)
 
 	defer statement.Close()
 
+	log.Println("executing create table")
 	//wywołanie kwerendy
 	_, err = statement.Exec()
 	checkErr(err)
+	log.Println("create table successful")
 }
 
 // insercik, wartości z requesta przekazywane w parametrach funkcji
@@ -56,14 +60,15 @@ func InsertIntoTable(nazwa string, dzialanie string, wystepowanie string) {
 	// przygotowywanie sql'a przez prepare jest bezpieczne, bardzo przydatne, gdy chcemy użyć tej samej kwerendy wiele razy
 	statement, err := db.Prepare(insertStatementSQL)
 	checkErr(err)
-	log.Println("succesful")
+	log.Println("successful")
 
 	defer statement.Close()
 
 	// wywołanie kwerendy
-	log.Println("execute")
+	log.Println("executing insert statement")
 	_, err = statement.Exec(nazwa, dzialanie, wystepowanie)
 	checkErr(err)
+	log.Println("insert successful")
 
 }
 
@@ -95,16 +100,14 @@ func PrintFromTable() string {
 	return fullReturn
 }
 
-//Szybkie łączenie z bazą
+//Kreator informacji o połączeniu z bazą danych
 func connectToDB() *sql.DB {
 
 	// tworzymy połączenie
-	log.Println("connecting to database...")
 	psqlconn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 
-	// połączenie i zdeferowanie zamknięcia pliku z bazą danych
+	// zapisujemy dane połączenia do zmiennej db
 	db, _ := sql.Open("postgres", psqlconn)
-	log.Println("Database connected!")
 
 	//zwracamy dane połączenia
 	return db
