@@ -12,7 +12,7 @@ const (
 	host     = "database"
 	port     = 5432
 	user     = "herbal"
-	password = "Huj105"
+	password = "webservice"
 	dbname   = "postgres"
 )
 
@@ -32,7 +32,7 @@ ziola(
 	//dbamy o zamknięcie połączenia
 	defer db.Close()
 
-	// przygotowywanie sql'a przez prepare jest bezpieczne, bardzo przydatne, gdy chcemy użyć tej samej kwerendy wiele razy
+	// przygotowywanie zapytania sql
 	log.Println("preparing create table statement")
 	statement, err := db.Prepare(createTable)
 	checkErr(err)
@@ -57,7 +57,7 @@ func InsertIntoTable(nazwa string, dzialanie string, wystepowanie string) {
 	insertStatementSQL := fmt.Sprintf(`INSERT INTO "ziola"("nazwa", "dzialanie", "wystepowanie") VALUES ($1, $2, $3);`)
 
 	log.Println("prepare insert statement")
-	// przygotowywanie sql'a przez prepare jest bezpieczne, bardzo przydatne, gdy chcemy użyć tej samej kwerendy wiele razy
+	// przygotowywanie zapytania sql
 	statement, err := db.Prepare(insertStatementSQL)
 	checkErr(err)
 	log.Println("successful")

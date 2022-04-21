@@ -3,7 +3,7 @@ services:
   database:
     image: postgres
     environment:
-      POSTGRES_PASSWORD: Huj105
+      POSTGRES_PASSWORD: webservice
       POSTGRES_USER: herbal
     volumes:
       - HerbalDatabase:/var/lib/postgresql/data

@@ -25,13 +25,13 @@ TODO:
 2.
 - (^>^) Zmiana bazy danych na postgresql (Dockerfile przestanie dzialac)
 - (^>^) Docker-compose uzywajacy istniejacego Dockerfile (ma znow dzialac)
-- Może można zmieścić zamknięcie połączenia z bazą wewnątrz funkcji connectToDB (chyba)? (panic)
 
 */
 func main() {
 
 	// tworzymy strukturę bazy (tabelki)
 	dbhandler.CreateTable()
+
 	// poniższe funkcje stawiają nam serwer
 	http.HandleFunc("/post", postHandler)
 	http.HandleFunc("/get", getHandler)
