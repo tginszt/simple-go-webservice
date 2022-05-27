@@ -7,7 +7,7 @@ import (
 	"log"
 )
 
-//dane połączenia z bazą danych
+// db connection credentials
 const (
 	host     = "database"
 	port     = 5432
@@ -18,21 +18,21 @@ const (
 
 func CreateTable() {
 
-	// tworzymy tabelkę
+	// creating a table
 	createTable := fmt.Sprintf(`CREATE TABLE IF NOT EXISTS
-ziola(
+herbs(
 		"id" SERIAL PRIMARY KEY,		
-		"nazwa" TEXT,
-		"dzialanie" TEXT,
-		"wystepowanie" TEXT		
+		"name" TEXT,
+		"effects" TEXT,
+		"occurrence" TEXT
 	  );`)
 
-	//łączenie z bazą
+	// connecting to db
 	db := connectToDB()
-	//dbamy o zamknięcie połączenia
+	// closing the connection
 	defer db.Close()
 
-	// przygotowywanie zapytania sql
+	// preparing sql statement
 	log.Println("preparing create table statement")
 	statement, err := db.Prepare(createTable)
 	checkErr(err)
@@ -40,33 +40,33 @@ ziola(
 	defer statement.Close()
 
 	log.Println("executing create table")
-	//wywołanie kwerendy
+	// executing the statement
 	_, err = statement.Exec()
 	checkErr(err)
 	log.Println("create table successful")
 }
 
-// insercik, wartości z requesta przekazywane w parametrach funkcji
-func InsertIntoTable(nazwa string, dzialanie string, wystepowanie string) {
+// inserting, values from request are passed as function parameters
+func InsertIntoTable(name string, effects string, occurrence string) {
 
-	//łączenie z bazą
+	// connecting to db
 	db := connectToDB()
-	//dbamy o zamknięcie połączenia
+	// closing the connection
 	defer db.Close()
 
-	insertStatementSQL := fmt.Sprintf(`INSERT INTO "ziola"("nazwa", "dzialanie", "wystepowanie") VALUES ($1, $2, $3);`)
+	insertStatementSQL := fmt.Sprintf(`INSERT INTO "herbs"("name", "effects", "occurrence") VALUES ($1, $2, $3);`)
 
 	log.Println("prepare insert statement")
-	// przygotowywanie zapytania sql
+	// preparing sql statement
 	statement, err := db.Prepare(insertStatementSQL)
 	checkErr(err)
 	log.Println("successful")
 
 	defer statement.Close()
 
-	// wywołanie kwerendy
+	// executing the statement
 	log.Println("executing insert statement")
-	_, err = statement.Exec(nazwa, dzialanie, wystepowanie)
+	_, err = statement.Exec(name, effects, occurrence)
 	checkErr(err)
 	log.Println("insert successful")
 
@@ -74,46 +74,46 @@ func InsertIntoTable(nazwa string, dzialanie string, wystepowanie string) {
 
 func PrintFromTable() string {
 
-	//łączenie z bazą
+	//connecting to db
 	db := connectToDB()
-	//dbamy o zamknięcie połączenia
+	// closing the connection
 	defer db.Close()
 
-	//pobieramy po rzędzie dane bazych
-	row, err := db.Query(fmt.Sprintf("SELECT * FROM ziola"))
+	// collecting data from db row by row
+	row, err := db.Query(fmt.Sprintf("SELECT * FROM herbs"))
 	checkErr(err)
 	defer row.Close()
 
-	// do tego stringa zwracamy wszystkie dane ładnie ułożone
+	// this string is used to return the data
 	var fullReturn string
 
-	// czytamy po rzędzie z bazy, wrzucamy wartości do fullReturn
+	// collecting data from db row by row into fullReturn
 	for row.Next() {
 		var id int
-		var nazwa string
-		var dzialanie string
-		var wystepowanie string
-		row.Scan(&id, &nazwa, &dzialanie, &wystepowanie)
+		var name string
+		var effects string
+		var occurrence string
+		row.Scan(&id, &name, &effects, &occurrence)
 
-		fullReturn += "Ziolo: " + nazwa + " " + dzialanie + " " + wystepowanie + "\n"
+		fullReturn += "herb: " + name + " " + effects + " " + occurrence + "\n"
 	}
 	return fullReturn
 }
 
-//Kreator informacji o połączeniu z bazą danych
+// db connection creator
 func connectToDB() *sql.DB {
 
-	// tworzymy połączenie
+	// creating the connection
 	psqlconn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 
-	// zapisujemy dane połączenia do zmiennej db
+	// saving connection data to db
 	db, _ := sql.Open("postgres", psqlconn)
 
-	//zwracamy dane połączenia
+	// returning the data
 	return db
 }
 
-//Sprawdzanie errorów nigdy jeszcze nie było tak szybkie i proste ;)
+// Simple and quick error handling
 func checkErr(err error) {
 	if err != nil {
 		log.Fatalln(err.Error())
